@@ -7,4 +7,8 @@ int main() {
   std::cerr << std::unitbuf;
 
   std::cout << "$ ";
+
+  std::string s;
+  std::cin >> s;
+  std::cout << s << ": command not found\n";
 }
