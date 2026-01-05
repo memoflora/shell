@@ -8,7 +8,7 @@ int main() {
 
   std::cout << "$ ";
 
-  std::string s;
-  std::cin >> s;
-  std::cout << s << ": command not found\n";
+  std::string input;
+  std::getline(std::cin, input);
+  std::cout << input << ": command not found\n";
 }
