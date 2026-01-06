@@ -9,13 +9,15 @@ int main() {
     while (true) {
         std::cout << "$ ";
 
-        std::string input;
-        std::getline(std::cin, input);
+        std::string command;
+        std::getline(std::cin, command);
 
-        if (input == "exit") {
-            return 0;
+        if (command == "exit") {
+            break;
+        } else if (command.substr(0, 4) == "echo") {
+            std::cout << command.substr(5) << '\n';
         } else {
-            std::cout << input << ": command not found\n";
+            std::cout << command << ": command not found\n";
         }
     }
 }
