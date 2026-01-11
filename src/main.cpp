@@ -4,8 +4,14 @@
 #include <vector>
 #include <unordered_map>
 #include <functional>
+#include <cstdlib>
+#include <filesystem>
+#include <unistd.h>
+
+namespace fs = std::filesystem;
 
 std::unordered_map<std::string, std::function<void(const std::vector<std::string>&)>> commands;
+std::vector<std::string> dirs;
 
 void cmd_exit(const std::vector<std::string>& args) {
     exit(0);
@@ -25,9 +31,20 @@ void cmd_type(const std::vector<std::string>& args) {
         std::string cmd = args[i];
         if (commands.count(cmd)) {
             std::cout << cmd << " is a shell builtin\n"; 
-        } else {
-            std::cout << cmd << ": not found\n";
-        } 
+            return;
+        }
+
+        for (std::string dir : dirs) {
+            std::string path = dir + '/' + cmd;
+            fs::path p(path);
+
+            if (fs::exists(p) && access(path.c_str(), X_OK) == 0) {
+                std::cout << cmd << " is " << path << '\n';
+                return;
+            }
+        }
+
+        std::cout << cmd << ": not found\n";
     }
 }
 
@@ -41,6 +58,14 @@ int main() {
         {"echo", cmd_echo},
         {"type", cmd_type}
     };
+
+    const char* path = std::getenv("PATH");
+    std::stringstream ss(path);
+    std::string dir;
+
+    while (std::getline(ss, dir, ':')) {
+        dirs.push_back(dir);
+    }
 
     while (true) {
         std::cout << "$ ";
