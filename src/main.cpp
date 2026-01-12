@@ -48,6 +48,11 @@ void cmd_type(const std::vector<std::string>& args) {
     }
 }
 
+void cmd_pwd(const std::vector<std::string>& args) {
+    fs::path wd = fs::current_path();
+    std::cout << wd.string() << '\n';
+}
+
 int main() {
     // Flush after every std::cout / std:cerr
     std::cout << std::unitbuf;
@@ -56,7 +61,8 @@ int main() {
     commands = {
         {"exit", cmd_exit},
         {"echo", cmd_echo},
-        {"type", cmd_type}
+        {"type", cmd_type},
+        {"pwd", cmd_pwd}
     };
 
     const char* path = std::getenv("PATH");
