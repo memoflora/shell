@@ -49,9 +49,19 @@ void cmd_type(const std::vector<std::string>& args) {
 }
 
 void cmd_pwd(const std::vector<std::string>& args) {
-    fs::path wd = fs::current_path();
-    std::cout << wd.string() << '\n';
+    fs::path cwd = fs::current_path();
+    std::cout << cwd.string() << '\n';
 }
+
+void cmd_cd(const std::vector<std::string>& args) {
+    fs::path nwd(args[0]);
+    if (fs::is_directory(nwd)) {
+        fs::current_path(nwd);
+        return;
+    }
+
+    std::cout << "cd: " << nwd.string() << ": No such file or directory\n";
+} 
 
 int main() {
     // Flush after every std::cout / std:cerr
@@ -62,7 +72,8 @@ int main() {
         {"exit", cmd_exit},
         {"echo", cmd_echo},
         {"type", cmd_type},
-        {"pwd", cmd_pwd}
+        {"pwd", cmd_pwd},
+        {"cd", cmd_cd}
     };
 
     const char* path = std::getenv("PATH");
