@@ -54,13 +54,49 @@ void cmd_pwd(const std::vector<std::string>& args) {
 }
 
 void cmd_cd(const std::vector<std::string>& args) {
-    fs::path nwd(args[0]);
-    if (fs::is_directory(nwd)) {
-        fs::current_path(nwd);
-        return;
+    if (args.empty()) {
+            const char* home = std::getenv("HOME");
+            fs::path hd(home);
+            fs::current_path(hd);
+            return;
+    }
+    
+    std::vector<std::string> subdirs;
+    std::stringstream ss(args[0]);
+    std::string subdir;
+
+    while (std::getline(ss, subdir, '/')) {
+        subdirs.push_back(subdir); 
     }
 
-    std::cout << "cd: " << nwd.string() << ": No such file or directory\n";
+    fs::path nwd;
+
+    if (subdirs[0] == "~") {
+        const char* home = std::getenv("HOME");
+        nwd = home;
+        subdirs.erase(subdirs.begin());
+    } else if (subdirs[0] == "") {
+        nwd = "/"; 
+    } else {
+        nwd = fs::current_path();
+    }
+
+    for (std::string subdir : subdirs) {
+        if (subdir == ".") {
+            continue;
+        } else if (subdir == "..") {
+            nwd = nwd.parent_path(); 
+        } else {
+            nwd /= subdir; 
+        } 
+
+        if (!fs::is_directory(nwd)) {
+            std::cout << "cd: " << args[0] << ": No such file or directory\n";
+            return;
+        }
+    }
+
+    fs::current_path(nwd);
 } 
 
 int main() {
