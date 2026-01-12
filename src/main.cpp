@@ -86,7 +86,22 @@ int main() {
 
         if (commands.count(cmd)) {
             commands[cmd](args);        
-        } else {
+            continue;
+        } 
+        
+        bool exec_found = false;
+        for (std::string dir : dirs) {
+            std::string path = dir + '/' + cmd;
+            fs::path p(path);
+
+            if (fs::exists(p) && access(path.c_str(), X_OK) == 0) {
+                std::system(input.c_str());
+                exec_found = true;
+                break;
+            }
+        }
+            
+        if (!exec_found) {
             std::cout << cmd << ": command not found\n";
         }
     }
