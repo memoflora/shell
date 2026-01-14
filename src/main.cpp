@@ -144,6 +144,15 @@ int main() {
                 continue;
             }
 
+            if (input[i] == '\"') {
+                size_t j = i;
+                while (j + 1 < n && input[j + 1] != '\"') j++;
+                
+                token += input.substr(i + 1, j - i);
+                i = j + 1;
+                continue;
+            }
+
             if (input[i] == '\'') {
                 size_t j = i;
                 while (j + 1 < n && input[j + 1] != '\'') j++;
@@ -154,7 +163,7 @@ int main() {
             }
 
             size_t j = i;
-            while (j + 1 < n && input[j + 1] != ' ' && input[j + 1] != '\'') j++;
+            while (j + 1 < n && input[j + 1] != ' ' && input[j + 1] != '\"' && input[j + 1] != '\'') j++;
             
             token += input.substr(i, j - i + 1);
             i = j;
