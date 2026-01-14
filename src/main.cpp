@@ -27,7 +27,7 @@ void cmd_echo(const std::vector<std::string>& args) {
 }
 
 void cmd_type(const std::vector<std::string>& args) {
-    for (int i = 0; i < args.size(); i++) { 
+    for (size_t i = 0; i < args.size(); i++) { 
         std::string cmd = args[i];
         if (commands.count(cmd)) {
             std::cout << cmd << " is a shell builtin\n"; 
@@ -126,14 +126,44 @@ int main() {
         std::string input;
         std::getline(std::cin, input);
 
-        std::stringstream ss(input);
+        size_t n = input.length();
+        std::string token = "";
         std::vector<std::string> tokens;
-        std::string token;
 
-        while (ss >> token) {
-            tokens.push_back(token);
+        for (size_t i = 0; i < n; i++) {
+            if (input[i] == ' ') {
+                if (!token.empty()) {
+                    tokens.push_back(token);
+                    token = "";
+                }
+
+                size_t j = i;
+                while (j + 1 < n && input[j + 1] == ' ') j++;
+
+                i = j;
+                continue;
+            }
+
+            if (input[i] == '\'') {
+                size_t j = i;
+                while (j + 1 < n && input[j + 1] != '\'') j++;
+                
+                token += input.substr(i + 1, j - i);
+                i = j + 1;
+                continue;
+            }
+
+            size_t j = i;
+            while (j + 1 < n && input[j + 1] != ' ' && input[j + 1] != '\'') j++;
+            
+            token += input.substr(i, j - i + 1);
+            i = j;
         }
 
+        if (!token.empty()) {
+            tokens.push_back(token);
+        }
+        
         std::string cmd = tokens[0];
         std::vector<std::string> args(tokens.begin() + 1, tokens.end());
 
